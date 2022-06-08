@@ -1,6 +1,8 @@
 #pragma once
-class UserBingo
+#include "Bingo.h"
+class UserBingo : public Bingo
 {
-	void makeBingo(int bingoSize);
+public:
+	UserBingo(const int& bingoSize, int menu);
 };
 

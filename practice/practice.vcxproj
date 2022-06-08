@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{59fccaf7-4395-4f73-a13c-edb1982bc6e9}</ProjectGuid>
-    <RootNamespace>YShwangGame</RootNamespace>
+    <ProjectGuid>{4f1f8c5e-8fde-4366-92a7-4af4d5801a1d}</ProjectGuid>
+    <RootNamespace>practice</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,17 +139,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Bingo.h" />
-    <ClInclude Include="ComputerBingo.h" />
-    <ClInclude Include="UserBingo.h" />
-    <ClInclude Include="YShwangGame.h" />
+    <ClInclude Include="Rect.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Bingo.cpp" />
-    <ClCompile Include="ComputerBingo.cpp" />
-    <ClCompile Include="TestMain.cpp" />
-    <ClCompile Include="UserBingo.cpp" />
-    <ClCompile Include="YShwangGame.cpp" />
+    <ClCompile Include="Rect.cpp" />
+    <ClCompile Include="testmain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

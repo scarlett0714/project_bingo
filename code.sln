@@ -139,6 +139,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{A611
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YShwangGame", "project\YShwangGame\YShwangGame.vcxproj", "{59FCCAF7-4395-4F73-A13C-EDB1982BC6E9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "practice", "practice\practice.vcxproj", "{4F1F8C5E-8FDE-4366-92A7-4AF4D5801A1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -579,6 +581,14 @@ Global
 		{59FCCAF7-4395-4F73-A13C-EDB1982BC6E9}.Release|x64.Build.0 = Release|x64
 		{59FCCAF7-4395-4F73-A13C-EDB1982BC6E9}.Release|x86.ActiveCfg = Release|Win32
 		{59FCCAF7-4395-4F73-A13C-EDB1982BC6E9}.Release|x86.Build.0 = Release|Win32
+		{4F1F8C5E-8FDE-4366-92A7-4AF4D5801A1D}.Debug|x64.ActiveCfg = Debug|x64
+		{4F1F8C5E-8FDE-4366-92A7-4AF4D5801A1D}.Debug|x64.Build.0 = Debug|x64
+		{4F1F8C5E-8FDE-4366-92A7-4AF4D5801A1D}.Debug|x86.ActiveCfg = Debug|Win32
+		{4F1F8C5E-8FDE-4366-92A7-4AF4D5801A1D}.Debug|x86.Build.0 = Debug|Win32
+		{4F1F8C5E-8FDE-4366-92A7-4AF4D5801A1D}.Release|x64.ActiveCfg = Release|x64
+		{4F1F8C5E-8FDE-4366-92A7-4AF4D5801A1D}.Release|x64.Build.0 = Release|x64
+		{4F1F8C5E-8FDE-4366-92A7-4AF4D5801A1D}.Release|x86.ActiveCfg = Release|Win32
+		{4F1F8C5E-8FDE-4366-92A7-4AF4D5801A1D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

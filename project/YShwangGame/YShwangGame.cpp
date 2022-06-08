@@ -1,7 +1,44 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <iomanip>
+#include <fstream>
+#include <string>
+#include <vector>
 #include "YShwangGame.h"
+#include <Windows.h>
+#include <conio.h>
+
+#define LEFT 75
+#define RIGHT 77
+#define UP 80
+#define DOWN 72
+
 using namespace std;
+
+//window API
+void setCursorView(bool visible) {
+	CONSOLE_CURSOR_INFO cursor = { 1, visible };
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor);
+}
+
+void gotoxy(int x, int y) {
+	COORD Pos = { x, y };
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
+}
+
+COORD getXY() {
+	COORD Cur;
+	CONSOLE_SCREEN_BUFFER_INFO a;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &a);
+	Cur.X = a.dwCursorPosition.X;
+	Cur.Y = a.dwCursorPosition.Y;
+	return Cur;
+}
+
+
+YShwangGame::YShwangGame()
+	: bingo(make_unique<unique_ptr<Bingo>[]>(2))
+{
+}
 
 YShwangGame::~YShwangGame()
 {
@@ -9,148 +46,630 @@ YShwangGame::~YShwangGame()
 
 void YShwangGame::play()
 {
-	cout << "202110547 È²À±¼±" << endl;
+	srand((unsigned int)time(NULL));
+	
 	menu();
 }
 
 void YShwangGame::menu()
 {
-	int menu; //menu¼±ÅÃ
+	int menu; //menuì„ íƒ
 	
 	while (true) {
+		gotoxy(52, 0);
+		cout << "202110547 í™©ìœ¤ì„ " << endl;
 
-		cout << "1) »õ °ÔÀÓ 2) ÀÌ¾îÇÏ±â 3) Á¾·á" << endl;
-		cout << "¸Ş´º¸¦ ¼±ÅÃÇÏ¼¼¿ä : ";
-		cin >> menu;
+		bingoLogo();
 
-		switch (menu) {
-		case 1:
-			newGame();
-			break;
-		case 2:
-			break;
-		case 3:
-			//Á¾·áÇßÀ» ¶§ ÀúÀåµÇ´Â ±â´É Ãß°¡
-			cout << "°ÔÀÓÀ» Á¾·áÇÕ´Ï´Ù." << endl;
-			return;
-		default:
-			cout << "¼±ÅÃ ¹üÀ§¸¦ ¹ş¾î³µ½À´Ï´Ù. ´Ù½Ã ¼±ÅÃÇØÁÖ¼¼¿ä." << endl;
+		gotoxy(54, 13);
+		cout << "1) ìƒˆë¡œí•˜ê¸°" << endl;
+		gotoxy(54, 15);
+		cout << "2) ì´ì–´í•˜ê¸°" << endl;
+		gotoxy(56, 17);
+		cout << "3) ì¢…ë£Œ" << endl;
+		
+
+		gotoxy(50, 20);
+		cout << "ë©”ë‰´ë¥¼ ì„ íƒí•˜ì„¸ìš”";
+
+		int key; int x = getXY().X; int y = getXY().Y;
+		while (true) {
+			key = _getch();
+			if (key == 224 || key == 0) {
+				key = _getch();
+
+				if (key == RIGHT) {
+					x += 1;
+					gotoxy(x, y);
+				}
+				else if (key == LEFT) {
+					x -= 1;
+					gotoxy(x, y);
+				}
+				else if (key == UP) {
+					y += 1;
+					gotoxy(x, y);
+				}
+				else if (key == DOWN) {
+					y -= 1;
+					gotoxy(x, y);
+				}
+				
+			}
+			if (key == 13) {
+				if (y == 13) {
+					newGame();
+					break;
+				}
+				else if (y == 15) {
+					system("cls");
+					gotoxy(52, 0);
+					cout << "202110547 í™©ìœ¤ì„ " << endl;
+
+					gotoxy(48, 14);
+					cout << "ì €ì¥ëœ íŒŒì¼ì„ ë¶ˆëŸ¬ì˜¤ëŠ”ì¤‘..." << endl;
+					Sleep(2000);
+					readfile();
+
+					show();
+					input();
+					break;
+				}
+				else if (y == 17) {
+					cout << "ê²Œì„ì„ ì¢…ë£Œí•©ë‹ˆë‹¤." << endl;
+					return;
+					//exit(0);
+				}
+				else {
+					cout << "ì„ íƒ ë²”ìœ„ë¥¼ ë²—ì–´ë‚¬ìŠµë‹ˆë‹¤. ë‹¤ì‹œ ì„ íƒí•´ì£¼ì„¸ìš”." << endl;
+				}
+
+			}
+			
 		}
 	}
 	
 }
 
+void YShwangGame::bingoLogo()
+{
+	gotoxy(26, 5);
+	cout << "â– â– â– â–       â– â– â– â– â–     â–       â–       â– â– â–          â– â– â–    " << endl;
+	gotoxy(26, 6);
+	cout << "â–       â–         â–         â– â–     â–     â–              â–       â–  " << endl;
+	gotoxy(26, 7);
+	cout << "â– â– â– â–           â–         â–   â–   â–    â–     â– â– â–    â–         â– " << endl;
+	gotoxy(26, 8);
+	cout << "â–       â–         â–         â–     â– â–     â–      â–       â–       â–  " << endl;
+	gotoxy(26, 9);
+	cout << "â– â– â– â–       â– â– â– â– â–     â–       â–       â– â– â–          â– â– â–    " << endl;
+}
+
+void YShwangGame::VSLogo()
+{
+	gotoxy(50, 9);
+	cout << "â–       â–     â– â– â–    " << endl;
+	gotoxy(50, 10);
+	cout << " â–     â–     â–         " << endl;
+	gotoxy(50, 11);
+	cout << "  â–   â–       â– â– â–    " << endl;
+	gotoxy(50, 12);
+	cout << "   â– â–             â–   " << endl;
+	gotoxy(50, 13);
+	cout << "    â–         â– â– â–    " << endl;
+}
+
+
 void YShwangGame::newGame()
 {
-	//ºù°íÆÇ Å©±â ¼±ÅÃ
+	//ë¹™ê³ íŒ í¬ê¸° ì„ íƒ
 	while (true) {
-		cout << "ºù°íÆÇÀÇ Å©±â¸¦ ÀÔ·ÂÇÏ¼¼¿ä(3 ~ 9) : ";
+		gotoxy(45, 21);
+		cout << "ë¹™ê³ íŒì˜ í¬ê¸°ë¥¼ ì…ë ¥í•˜ì„¸ìš”(3 ~ 9) : ";
 		cin >> bingoSize;
 
 		if (bingoSize >= 3 && bingoSize <= 9) {
-			cout << bingoSize << "x" << bingoSize << " ºù°í¸¦ ½ÃÀÛÇÕ´Ï´Ù." << endl;
+			gotoxy(45, 21);
+			cout << "                                     " << endl;
+			gotoxy(49, 21);
+			cout << bingoSize << " x " << bingoSize << " ë¹™ê³ ë¥¼ ì‹œì‘í•©ë‹ˆë‹¤" << endl;
+			Sleep(2000);
 			break;
 		}
 		else {
-			cout << "Á¤ÇØÁø ¹üÀ§ ³»ÀÇ ¼ıÀÚ¸¸ ÀÔ·ÂÇÏ¼¼¿ä." << endl;
+			gotoxy(45, 21);
+			cout << "ì •í•´ì§„ ë²”ìœ„ì˜ ìˆ«ìë¥¼ ì…ë ¥í•˜ì„¸ìš”." << endl;
+			Sleep(2000);
 		}
 	}
 
-	//ComputerBingo °´Ã¼ »ı¼º
-	
-	//UserBingo °´Ã¼ »ı¼º
-	
+	//ComputerBingo ê°ì²´ ìƒì„±
+	bingo[0] = move(make_unique<ComputerBingo>(bingoSize, 1));
+	//UserBingo ê°ì²´ ìƒì„±
+	bingo[1] = move(make_unique<UserBingo>(bingoSize, 1));
 
+	show();
+	input();
+}
+
+void YShwangGame::makeBingo()
+{
+	//ComputerBingo ê°ì²´ ìƒì„±
+	bingo[0] = move(make_unique<ComputerBingo>(bingoSize, 2));
+	//UserBingo ê°ì²´ ìƒì„±
+	bingo[1] = move(make_unique<UserBingo>(bingoSize, 2));
 }
 
 void YShwangGame::show()
 {
-	system("cls");
-	cout << "202110547 È²À±¼±" << endl;
-
-	//ºù°íÃâ·Â
+	//ë¹™ê³ ì¶œë ¥
 	//computer
+	system("cls");
+	gotoxy(52, 0);
+	cout << "202110547 í™©ìœ¤ì„ " << endl;
+
+	gotoxy(58 - ((bingoSize * 5) / 2 + 20 + 2), 8);
+	cout << "COMPUTER" << endl;
+
+	gotoxy(58 - (bingoSize * 5 + 20), 11);
 	cout.setf(ios::right);
-	for (int i = 0; i < (bingoSize * bingoSize); i++) {
-		for (int j = 0; j < (bingoSize * bingoSize); j++) {
-			//computerÀÇ cStatus°¡ 0ÀÌ¸é ¼ıÀÚ ±×´ë·Î Ãâ·Â
-			//computerÀÇ cStatus°¡ 1ÀÌ¸é ¡ÛÃâ·Â
-			cout << setw(5); //ÄÚµå Ãß°¡
+	for (int i = 0; i < (bingoSize); i++) {
+		for (int j = 0; j < (bingoSize); j++) {
+			
+			if (bingo[0]->status[i][j] == 0) {
+				cout << setw(5) << bingo[0]->map[i][j];
+			}
+			else if(bingo[0]->status[i][j] == 1){
+				cout << setw(5) << "â—";
+			}
+			else {
+				cout << setw(5) << "â—‹";
+			}
+			
 		}
-		cout << endl;
+		gotoxy(58 - (bingoSize * 5 + 20), 12+i);
 	}
 
+	VSLogo();
+
+	gotoxy(58 + ((bingoSize * 5) / 2 + 20), 8);
+	cout << "USER" << endl;
 	//user
-	cout.setf(ios::right);
-	for (int i = 0; i < (bingoSize * bingoSize); i++) {
-		for (int j = 0; j < (bingoSize * bingoSize); j++) {
-			//userÀÇ uStatus°¡ 0ÀÌ¸é ¼ıÀÚ ±×´ë·Î Ãâ·Â
-			//userÀÇ uStatus°¡ 1ÀÌ¸é ¡ÜÃâ·Â
-			cout << setw(5); //ÄÚµå Ãß°¡
+	gotoxy(78, 11);
+	for (int i = 0; i < (bingoSize); i++) {
+		for (int j = 0; j < (bingoSize); j++) {
+			if (bingo[1]->status[i][j] == 0) {
+				cout << setw(5) << bingo[1]->map[i][j];
+			}
+			else if (bingo[1]->status[i][j] == 1) {
+				cout << setw(5) << "â—";
+			}
+			else {
+				cout << setw(5) << "â—‹";
+			}
 		}
-		cout << endl;
+		gotoxy(78, 12+i);
 	}
 
 }
 
 void YShwangGame::input()
 {
-	
-	
-	//user ¼ıÀÚÀÔ·Â
+	//user ìˆ«ìì…ë ¥
+	gotoxy(50, 15);
 	int num;
-	cout << "¼ıÀÚ¸¦ ÀÔ·ÂÇÏ¼¼¿ä : ";
-	cin >> num;
+	cout << "ìˆ«ìë¥¼ ì„ íƒí•˜ì„¸ìš”";
+	int key; int x = 77; int y = 11;
 
-	//computer ¼ıÀÚÀÔ·Â
-	//computer.find(num);
-	//computer.check();
+	while (true) {
+		key = _getch();
+		if (key == 224 || key == 0) {
+			key = _getch();
 
-	//½ÂÆĞÆÇÁ¤
-	//if (computer.check() == true && user.check() == false) { //ÄÄÇ»ÅÍ°¡ ÀÌ±è
-	//	cout << "ÄÄÇ»ÅÍ°¡ ½Â¸®ÇÏ¿´½À´Ï´Ù." << endl;
-	// 	show();
-	// 	replay();
-	//}
-	//else if (computer.check() == false && user.check() == true) { //À¯Àú°¡ ÀÌ±è
-	//	cout << "À¯Àú°¡ ½Â¸®ÇÏ¿´½À´Ï´Ù." << endl;
-	// 	show();
-	// 	replay();
-	//}
-	//else if (computer.check() == true && user.check() == true) { //¹«½ÂºÎ
-	//	cout << "¹«½ÂºÎÀÔ´Ï´Ù." << endl;
-	// 	show();
-	// 	replay();
-	//}
+			if (key == RIGHT) {
+				x += 5;
+				gotoxy(x, y);
+			}
+			else if (key == LEFT) {
+				x -= 5;
+				gotoxy(x, y);
+			}
+			else if (key == UP) {
+				y += 1;
+				gotoxy(x, y);
+			}
+			else if (key == DOWN) {
+				y -= 1;
+				gotoxy(x, y);
+			}
 
+		}
+		if (key == 13) {
+			int dx = (x - 78) / 5;
+			int dy = y - 11;
+
+			num = bingo[1]->find2(dy, dx);
+			
+			break;
+		}
+
+	}
+	//cin >> num;
+
+	//bingo[1]->find(num, 1);
 	
+	bingo[1]->check(cnt);
+
+	bingo[0]->find(num, 1);
+	bingo[0]->check(cnt);
+
+	bingo[1]->save.push_back(num);
+
+	judge();
+	show();
+
+	//computer ìˆ«ìì„ íƒ
+	gotoxy(49, 15);
+	cout << "ì»´í“¨í„°ê°€ ê³ ë¯¼ì¤‘ì…ë‹ˆë‹¤..." << endl;
+	Sleep(3000);
+
+	int choice = bingo[0]->find();
+	bingo[0]->check(cnt);
+	bingo[0]->save.push_back(choice);
+
+	bingo[1]->find(choice, 0);
+	bingo[1]->check(cnt);
+
+	judge();
+	show();
+
+	save();
+}
+
+void YShwangGame::judge()
+{
+	//ìŠ¹íŒ¨íŒì •
+	if (bingo[0]->check(cnt) == true && bingo[1]->check(cnt) == false) { //ì»´í“¨í„°ê°€ ì´ê¹€
+		show();
+		gotoxy(49, 15);
+		cout << "ì»´í“¨í„°ê°€ ìŠ¹ë¦¬í•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
+		Sleep(2000);
+		gotoxy(49, 15);
+		cout << "ë°©ê¸ˆ ê²Œì„ì„ replayí•©ë‹ˆë‹¤." << endl;
+		Sleep(2000);
+		replay();
+	}
+	else if (bingo[0]->check(cnt) == false && bingo[1]->check(cnt) == true) { //ìœ ì €ê°€ ì´ê¹€
+		
+		show();
+		gotoxy(49, 15);
+		cout << "ìœ ì €ê°€ ìŠ¹ë¦¬í•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
+		Sleep(2000);
+		gotoxy(49, 15);
+		cout << "ë°©ê¸ˆ ê²Œì„ì„ replayí•©ë‹ˆë‹¤." << endl;
+		Sleep(2000);
+		replay();
+	}
+	else if (bingo[0]->check(cnt) == true && bingo[1]->check(cnt) == true) { //ë¬´ìŠ¹ë¶€
+		
+		show();
+		gotoxy(52, 15);
+		cout << "ë¬´ìŠ¹ë¶€ì…ë‹ˆë‹¤." << endl;
+		Sleep(3000);
+		cnt++;
+
+		bool ch = true;
+		for (int i = 0; i < bingoSize; i++) {
+			for (int j = 0; j < bingoSize; j++) {
+				if (bingo[0]->status[i][j] == 0) ch = false;
+			}
+		}
+
+		if (ch == true) { //ëª¨ë“  ë²ˆí˜¸ê°€ ì„ íƒë¨
+			show();
+			Sleep(3000);
+			replay();
+		}
+	}
 }
 
 void YShwangGame::replay()
 {
-	//user->computer ¼ø¼­·Î ºù°í °ÔÀÓÁøÇà
-	//for (int i = 0; i < bingoSize; i++) {
-	//	for (int j = 0; j < bingoSize; j++) {
-	//		uStatus[i][j] = 0; //Ã³À½»óÅÂ·Î ÃÊ±âÈ­
-	//	}
-	//}
-	//for (int i = 0; i < bingoSize; i++) {
-	//	for (int j = 0; j < bingoSize; j++) {
-	//		cStatus[i][j] = 0; //Ã³À½»óÅÂ·Î ÃÊ±âÈ­
-	//	}
-	//}
+	//user->computer ìˆœì„œë¡œ ë¹™ê³  ê²Œì„ì§„í–‰
+	for (int i = 0; i < bingoSize; i++) {
+		for (int j = 0; j < bingoSize; j++) {
+			bingo[0]->status[i][j] = 0; //ì²˜ìŒìƒíƒœë¡œ ì´ˆê¸°í™”
+		}
+	}
+	for (int i = 0; i < bingoSize; i++) {
+		for (int j = 0; j < bingoSize; j++) {
+			bingo[1]->status[i][j] = 0; //ì²˜ìŒìƒíƒœë¡œ ì´ˆê¸°í™”
+		}
+	}
 
-	int i = 0; //¹İº¹º¯¼ö
+	int i = 0; //ë°˜ë³µë³€ìˆ˜
 	while (true) {
-		//uSave¿¡¼­ °ªÀ» ÇÑ°³ ²¨³» find, check ¼öÇà
-		//cSave¿¡¼­ °ªÀ» ÇÑ°³ ²¨³» find, check ¼öÇà
+		//saveì—ì„œ ê°’ í•˜ë‚˜ì”© ë¹¼ì™€ì„œ findí•˜ê³  check
 
-		//½ÂÆĞ°¡ ³¯¶§±îÁö ¹İº¹
+		if (bingo[0]->save.size() < bingo[1]->save.size()) { //userë¡œ ê²Œì„ëë‚œ ê²½ìš°
+			bingo[1]->find(bingo[1]->save[i], 1);
+			bingo[0]->find(bingo[1]->save[i], 1);
+			show();
+			Sleep(3000);
 
-		//show();
-		//Sleep(5000);
-		//system("cls");
+			if (bingo[1]->save.size() <= (i + 1)) {
+				system("cls");
+				break;
+			}
+
+			bingo[1]->find(bingo[0]->save[i], 0);
+			bingo[0]->find(bingo[0]->save[i], 0);
+			show();
+			i++;
+
+			Sleep(3000);
+			system("cls");
+
+			
+		}
+		else { //computerë¡œ ê²Œì„ëë‚œ ê²½ìš°
+			bingo[1]->find(bingo[1]->save[i], 1);
+			bingo[0]->find(bingo[1]->save[i], 1);
+			show();
+			Sleep(3000);
+
+			bingo[1]->find(bingo[0]->save[i], 0);
+			bingo[0]->find(bingo[0]->save[i], 0);
+			show();
+			i++;
+
+			Sleep(3000);
+			system("cls");
+			if (bingo[0]->save.size() <= i) break;
+		}
+		
+	}
+
+	menu();
+	return;
+}
+
+void YShwangGame::save()
+{
+	while (true) {
+		gotoxy(56, 15);
+		cout << "ì €ì¥ í›„,";
+		
+		gotoxy(44, 16);
+		cout << "ê²Œì„ì„ ì¢…ë£Œí•˜ì‹œê² ìŠµë‹ˆê¹Œ? (y/n) : ";
+
+		char check;
+		cin >> check;
+		switch (check) {
+		case 'y':
+			gotoxy(56, 15);
+			cout << "         ";
+			gotoxy(44, 16);
+			cout << "                                    ";
+
+			gotoxy(50, 15);
+			cout << "íŒŒì¼ì„ ì €ì¥ ì¤‘..." << endl;
+			writefile();
+			gotoxy(50, 16);
+			cout << "ê²Œì„ì„ ì¢…ë£Œí•©ë‹ˆë‹¤" << endl;
+			exit(0);
+		case 'n':
+			gotoxy(48, 15);
+			cout << "ê²Œì„ì„ ê³„ì† ì§„í–‰í•©ë‹ˆë‹¤." << endl;
+			Sleep(1000);
+			gotoxy(48, 15);
+			cout << "                         " << endl;
+			gotoxy(44, 16);
+			cout << "                                  ";
+			input();
+			break;
+		default:
+			gotoxy(50, 17);
+			cout << "ë‹¤ì‹œ ì…ë ¥í•˜ì„¸ìš”" << endl;
+			Sleep(2000);
+		}
 	}
 }
+
+void YShwangGame::readfile()
+{
+	//computer
+	ifstream computer_map;
+	computer_map.open("computerMAP.txt");
+
+	int i = 0; int j = 0;
+	if (computer_map.is_open()) {
+		string str;
+		getline(computer_map, str);
+		bingoSize = stoi(str);
+		makeBingo();
+		while (!computer_map.eof() && i <= bingoSize - 1) { 
+			
+			getline(computer_map, str);
+			if (j < bingoSize) {
+				bingo[0]->map[i][j++] = stoi(str);
+			}
+			else {
+				j = 0;
+				i++;
+				if (i == bingoSize)break;
+				bingo[0]->map[i][j++] = stoi(str);
+			}
+			
+		}
+	}
+	computer_map.close();
+
+	ifstream computer_status;
+	computer_status.open("computerSTATUS.txt");
+
+	i = 0; j = 0;
+	if (computer_status.is_open()) {
+		while (!computer_status.eof() && i <= bingoSize - 1) {
+			string str;
+			getline(computer_status, str);
+			if (j < bingoSize) {
+				bingo[0]->status[i][j++] = stoi(str);
+			}
+			else {
+				j = 0;
+				i++;
+				if (i == bingoSize)break;
+				bingo[0]->status[i][j++] = stoi(str);
+			}
+
+		}
+	}
+	computer_status.close();
+
+	//user
+	ifstream user_map;
+	user_map.open("userMAP.txt");
+
+	i = 0; j = 0;
+	if (user_map.is_open()) {
+		while (!user_map.eof() && i <= bingoSize - 1) {
+			string str;
+			getline(user_map, str);
+			if (j < bingoSize) {
+				bingo[1]->map[i][j++] = stoi(str);
+			}
+			else {
+				j = 0;
+				i++;
+				if (i == bingoSize)break;
+				bingo[1]->map[i][j++] = stoi(str);
+			}
+
+		}
+	}
+	user_map.close();
+
+	ifstream user_status;
+	user_status.open("userSTATUS.txt");
+
+	i = 0; j = 0;
+	if (user_status.is_open()) {
+		while (!user_status.eof() && i <= bingoSize - 1) {
+			string str;
+			getline(user_status, str);
+			if (j < bingoSize) {
+				bingo[1]->status[i][j++] = stoi(str);
+			}
+			else {
+				j = 0;
+				i++;
+				if (i == bingoSize)break;
+				bingo[1]->status[i][j++] = stoi(str);
+			}
+
+		}
+	}
+	user_status.close();
+
+	//í˜„ì¬ê¹Œì§€ ê²Œì„ ì§„í–‰ ìˆœì„œ
+	ifstream computer_game;
+	computer_game.open("computerGAME.txt");
+	
+	i = 0; j = 0;
+	if (computer_game.is_open()) {
+		while (!computer_game.eof()) {
+			string str;
+			getline(computer_game, str);
+			if (str != "") {
+				bingo[0]->save.push_back(stoi(str));
+			}
+	
+		}
+	}
+	computer_game.close();
+	
+	ifstream user_game;
+	user_game.open("userGAME.txt");
+	
+	i = 0;
+	if (user_game.is_open()) {
+		while (!user_game.eof()) {
+			string str;
+			getline(user_game, str);
+			if (str != "") {
+				bingo[1]->save.push_back(stoi(str));
+			}
+	
+		}
+	}
+	user_game.close();
+}
+
+void YShwangGame::writefile()
+{
+	//computer
+	ofstream computer_map;
+	computer_map.open("computerMAP.txt");
+	string str = to_string(bingoSize) + "\n";
+	computer_map.write(str.c_str(), str.size());
+	for (int i = 0; i < bingoSize; i++) {
+		for (int j = 0; j < bingoSize; j++) {
+			str = to_string(bingo[0]->map[i][j]) + "\n";
+			computer_map.write(str.c_str(), str.size());
+		}
+	}
+	computer_map.close();
+
+	ofstream computer_status;
+	computer_status.open("computerSTATUS.txt");
+	for (int i = 0; i < bingoSize; i++) {
+		for (int j = 0; j < bingoSize; j++) {
+			string str = to_string(bingo[0]->status[i][j]) + "\n";
+			computer_status.write(str.c_str(), str.size());
+		}
+	}
+	computer_status.close();
+
+	//user
+	ofstream user_map;
+	user_map.open("userMAP.txt");
+	for (int i = 0; i < bingoSize; i++) {
+		for (int j = 0; j < bingoSize; j++) {
+			string str = to_string(bingo[1]->map[i][j]) + "\n";
+			user_map.write(str.c_str(), str.size());
+		}
+	}
+	user_map.close();
+
+	ofstream user_status;
+	user_status.open("userSTATUS.txt");
+	for (int i = 0; i < bingoSize; i++) {
+		for (int j = 0; j < bingoSize; j++) {
+			string str = to_string(bingo[1]->status[i][j]) + "\n";
+			user_status.write(str.c_str(), str.size());
+		}
+	}
+	user_status.close();
+
+	//í˜„ì¬ê¹Œì§€ ê²Œì„ ì§„í–‰ ìˆœì„œ
+	ofstream computer_game;
+	computer_game.open("computerGAME.txt");
+	for (int i = 0; i < bingo[0]->save.size(); i++) {
+		string str = to_string(bingo[0]->save[i]) + "\n";
+		computer_game.write(str.c_str(), str.size());
+	}
+	computer_game.close();
+
+	//í˜„ì¬ê¹Œì§€ ê²Œì„ ì§„í–‰ ìˆœì„œ
+	ofstream user_game;
+	user_game.open("userGAME.txt");
+	for (int i = 0; i < bingo[1]->save.size(); i++) {
+		string str = to_string(bingo[1]->save[i]) + "\n";
+		user_game.write(str.c_str(), str.size());
+	}
+	user_game.close();
+}
+
 
 

@@ -1,7 +1,6 @@
 #pragma once
 #include "DocWriter.h"
-class HTMLWriter :
-    public DocWriter
+class HTMLWriter : public DocWriter
 {
 protected:
     string fontName = "µ¸¿ò";
