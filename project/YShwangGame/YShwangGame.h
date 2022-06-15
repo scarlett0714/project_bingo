@@ -7,6 +7,7 @@ class YShwangGame
 public:
 	int bingoSize;
 	int cnt = 0; //公铰何 冉荐
+	bool gameover = false;
 	unique_ptr<unique_ptr<Bingo>[]> bingo = nullptr;
 
 	YShwangGame(); //积己磊

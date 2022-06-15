@@ -98,7 +98,9 @@ void YShwangGame::menu()
 			}
 			if (key == 13) {
 				if (y == 13) {
+					
 					newGame();
+					//gameover = false;
 					break;
 				}
 				else if (y == 15) {
@@ -163,6 +165,8 @@ void YShwangGame::VSLogo()
 void YShwangGame::newGame()
 {
 	//빙고판 크기 선택
+	gameover = false;
+	cnt = 0;
 	while (true) {
 		gotoxy(45, 21);
 		cout << "빙고판의 크기를 입력하세요(3 ~ 9) : ";
@@ -208,44 +212,44 @@ void YShwangGame::show()
 	gotoxy(52, 0);
 	cout << "202110547 황윤선" << endl;
 
-	gotoxy(58 - ((bingoSize * 5) / 2 + 20 + 2), 8);
+	gotoxy(58 - ((bingoSize * 3) / 2 + 20 + 2), 8);
 	cout << "COMPUTER" << endl;
 
-	gotoxy(58 - (bingoSize * 5 + 20), 11);
+	gotoxy(58 - (bingoSize * 3 + 20), 11);
 	cout.setf(ios::right);
 	for (int i = 0; i < (bingoSize); i++) {
 		for (int j = 0; j < (bingoSize); j++) {
 			
 			if (bingo[0]->status[i][j] == 0) {
-				cout << setw(5) << bingo[0]->map[i][j];
+				cout << setw(3) << bingo[0]->map[i][j];
 			}
 			else if(bingo[0]->status[i][j] == 1){
-				cout << setw(5) << "●";
+				cout << setw(3) << "●";
 			}
 			else {
-				cout << setw(5) << "○";
+				cout << setw(3) << "○";
 			}
 			
 		}
-		gotoxy(58 - (bingoSize * 5 + 20), 12+i);
+		gotoxy(58 - (bingoSize * 3 + 20), 12+i);
 	}
 
 	VSLogo();
 
-	gotoxy(58 + ((bingoSize * 5) / 2 + 20), 8);
+	gotoxy(58 + ((bingoSize * 3) / 2 + 20), 8);
 	cout << "USER" << endl;
 	//user
 	gotoxy(78, 11);
 	for (int i = 0; i < (bingoSize); i++) {
 		for (int j = 0; j < (bingoSize); j++) {
 			if (bingo[1]->status[i][j] == 0) {
-				cout << setw(5) << bingo[1]->map[i][j];
+				cout << setw(3) << bingo[1]->map[i][j];
 			}
 			else if (bingo[1]->status[i][j] == 1) {
-				cout << setw(5) << "●";
+				cout << setw(3) << "●";
 			}
 			else {
-				cout << setw(5) << "○";
+				cout << setw(3) << "○";
 			}
 		}
 		gotoxy(78, 12+i);
@@ -267,11 +271,11 @@ void YShwangGame::input()
 			key = _getch();
 
 			if (key == RIGHT) {
-				x += 5;
+				x += 3;
 				gotoxy(x, y);
 			}
 			else if (key == LEFT) {
-				x -= 5;
+				x -= 3;
 				gotoxy(x, y);
 			}
 			else if (key == UP) {
@@ -285,7 +289,7 @@ void YShwangGame::input()
 
 		}
 		if (key == 13) {
-			int dx = (x - 78) / 5;
+			int dx = (x - 78) / 3;
 			int dy = y - 11;
 
 			num = bingo[1]->find2(dy, dx);
@@ -306,6 +310,7 @@ void YShwangGame::input()
 	bingo[1]->save.push_back(num);
 
 	judge();
+	if (gameover) return;
 	show();
 
 	//computer 숫자선택
@@ -321,7 +326,9 @@ void YShwangGame::input()
 	bingo[1]->check(cnt);
 
 	judge();
+	
 	show();
+
 
 	save();
 }
@@ -338,6 +345,8 @@ void YShwangGame::judge()
 		cout << "방금 게임을 replay합니다." << endl;
 		Sleep(2000);
 		replay();
+		gameover = true;
+
 	}
 	else if (bingo[0]->check(cnt) == false && bingo[1]->check(cnt) == true) { //유저가 이김
 		
@@ -349,6 +358,8 @@ void YShwangGame::judge()
 		cout << "방금 게임을 replay합니다." << endl;
 		Sleep(2000);
 		replay();
+		gameover = true;
+
 	}
 	else if (bingo[0]->check(cnt) == true && bingo[1]->check(cnt) == true) { //무승부
 		
@@ -369,6 +380,7 @@ void YShwangGame::judge()
 			show();
 			Sleep(3000);
 			replay();
+			gameover = true;
 		}
 	}
 }
@@ -429,14 +441,14 @@ void YShwangGame::replay()
 		}
 		
 	}
-
-	menu();
-	return;
+	system("cls");
 }
 
 void YShwangGame::save()
 {
+	
 	while (true) {
+		if (gameover)return;
 		gotoxy(56, 15);
 		cout << "저장 후,";
 		
@@ -457,7 +469,9 @@ void YShwangGame::save()
 			writefile();
 			gotoxy(50, 16);
 			cout << "게임을 종료합니다" << endl;
-			exit(0);
+			system("cls");
+			gameover = true;
+			return;
 		case 'n':
 			gotoxy(48, 15);
 			cout << "게임을 계속 진행합니다." << endl;
@@ -604,6 +618,23 @@ void YShwangGame::readfile()
 		}
 	}
 	user_game.close();
+
+	//무승부 횟수
+	ifstream same_cnt;
+	same_cnt.open("cnt.txt");
+
+	
+	if (same_cnt.is_open()) {
+		while (!same_cnt.eof()) {
+			string str;
+			getline(same_cnt, str);
+			if (str != "") {
+				cnt = stoi(str);
+			}
+
+		}
+	}
+	same_cnt.close();
 }
 
 void YShwangGame::writefile()
@@ -669,6 +700,15 @@ void YShwangGame::writefile()
 		user_game.write(str.c_str(), str.size());
 	}
 	user_game.close();
+
+	//무승부 횟수
+	ofstream same_cnt;
+	same_cnt.open("cnt.txt");
+	
+	str = to_string(cnt);
+	same_cnt.write(str.c_str(), str.size());
+	
+	same_cnt.close();
 }
 
 
